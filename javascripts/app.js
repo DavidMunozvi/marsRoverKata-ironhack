@@ -4,6 +4,7 @@ var rover = {
   direction: "N",
   x: 0,
   y: 0,
+  travelLog: ["[0,0]"]
 };
 // ======================
 function turnLeft(rover){
@@ -22,6 +23,7 @@ function moveForward(rover){
   if(rover.direction === "W") rover.x --;
   if(rover.direction === "S") rover.y ++;
   if(rover.direction === "E") rover.x ++;
+  rover.travelLog.push("["+rover.x +","+ rover.y +"]")
   console.log("Rover is moving to" + rover.direction + ".Next position: [" +
   rover.x + "," + rover.y + "]")
 }
@@ -43,5 +45,23 @@ function calculatePosition(currentDirection, turnTo){
     if (turnTo === "right") rover.direction = "S";
     if (turnTo === "left") rover.direction = "N";
     break;
+  }
+}
+function exeCommandsList (commands) {
+  for (var i=0; i<commands.lenght; i++){
+    if(commands[i] !== "f" && commands[i] !== "r" && commands[i] !== "l")
+    console.log("Command NOT correct, you can only use 'f', 'r' and 'l'");
+    else{
+      if(commands[i] === "f") moveForward(rover);
+      if(commands[i] === "r") moveForward(rover);
+      if(commands[i] === "l") moveForward(rover);
+    }
+  }
+  printMovements();
+}
+function printMovements(){
+  console.log("Travel Log: \n")
+  for(var move in rover.travelLog){
+    console.log(rover.travelLog[move]);
   }
 }
