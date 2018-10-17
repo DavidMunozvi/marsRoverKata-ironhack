@@ -1,115 +1,174 @@
+ /*
+    -Iteration 1  The Rover Object
+    -Iteration 2  Turning the Rover
+    -Iteration 3  Moving the Rover
+    -Iteration 4  Commands
+    -Iteration 5  Tracking
+  */
+
+
 // Rover Object Goes Here
 // ======================
-var rover1 = {
-  id: "rover1",
+var rover = {
+  id: "Rover",
   direction: "N",
   x: 0,
   y: 0,
-  travelLog: ["[0,0]"],
-  isMyturn: true
+  travelLog: [],
+  isMyTurn: true
 };
-var rover2 = {
-  id: "Rover 2",
+
+var teddy = {
+  id: "Teddy",
   direction: "N",
-  x: 0,
-  y: 7,
+  x: 2,
+  y: 0,
   travelLog: [],
   isMyTurn: false
 };
-var rovers = [rover1, rover2];
-var cuadricula = [
-  [rover1, null, null, "rift", null, null, null, null, null, rover2],
+
+var ironRover = {
+  id: "ironrover",
+  direction: "N",
+  x: 4,
+  y: 0,
+  travelLog: [],
+  isMyTurn: false
+};
+
+var rovers = [rover, teddy, ironRover];
+//Cuadricula
+var mars = [
+  [rover, null, null, "rift", null, null, null, null, null, null],
+  [null, "rift", null, null, null, null, "ovni", null, null, null],
+  [teddy, null, null, null, "crater", null, null, null, "rift", null],
   [null, "rift", null, null, null, null, null, null, null, null],
-  ["crater", null, null, null, null, null, null, null, "rift", null],
-  [null, "rift", null, null, null, null, null, null, null, null],
-  [null, null, null, null, "rift", null, null, null, null, null],
-  [null, null, null, "crater", null, null, null, null, null, null],
+  [ironRover, null, null, null, "rift", null, null, null, null, null],
+  [null, null, null, "rift", null, null, null, "alien", null, null],
   [null, null, null, null, null, null, null, null, null, "rift"],
-  ["rift", null, null, null, null, null, null, null, null, null],
+  ["rift", null, null, null, null, null, "ovni", null, null, null],
   [null, "rift", null, null, null, null, null, "rift", null, null],
-  [null, null, null, null, "crater", null, null, null, null, null]
+  [null, null, null, null, "rift", null, null, null, null, null]
 ];
+
 // ======================
+
+//movimientos
+
+//movimientos izquierda y derecha
 function turnLeft(rover){
   console.log("turnLeft was called!");
-  calculatePosition(rover.direction, "left", rover);
+  rightLeftDirection(rover.direction, "left", rover);
 }
 
 function turnRight(rover){
+  rightLeftDirection(rover.direction, "right", rover);
   console.log("turnRight was called!");
-  calculatePosition(rover.direction, "right", rover);
+  
 }
 
+function rightLeftDirection(currentDirection, turn, rover){
+  switch (currentDirection) {
+    case "N":
+      if (turn === "right") rover.direction = "E";
+      else if (turn === "left") rover.direction = "W";
+      break;
+
+    case "W":
+      if (turn === "right") rover.direction = "N";
+      else if (turn === "left") rover.direction = "S";
+      break;
+
+    case "S":
+      if (turn === "right") rover.direction = "W";
+      else if (turn === "left") rover.direction = "E";
+      break;
+      
+    case "E":
+      if (turn === "right") rover.direction = "S";
+      else if (turn === "left") rover.direction = "N";
+      break;
+  }
+}
+//movimientos adelante atrás
 function moveForward(rover){
-  console.log("moveForward was called!");
-  var moved = makeMove (rover, "forward");
-  registmove(rover, moved);
-  nxtturn(rover);
+  console.log("turn forward was called!");
+  var moved = backForwMove (rover, "forward");
+
+  registMove(rover, moved);
+  nextTurn(rover);
 }
 
 function moveBackward(rover){
-  console.log("moveBackward was called!");
-   var hasMoved = makeMove (rover, "backward");
-   registerMovement(rover, hasMoved);
-   nxtturn(rover);
+  console.log("turn backward was called!");
+  var moved = backForwMove (rover, "backward");
+
+  registMove(rover, moved);
+  nextTurn(rover);
 }
-function makeMove (rover, movement){
-  console.log(rover.id + "current position: [" + rover.x + "," + rover.y + "]");
+
+function backForwMove (rover, movement){
+  console.log(rover.id + " is here: [" + rover.x + "," + rover.y + "]");
   var moved = true;
+
   switch (rover.direction) {
     case "N":
       if (movement === "forward")
-        moved = moveCheck(rover.x - 1, rover.y, rover);
+        moved = checkMovement(rover.x - 1, rover.y, rover);
       if (movement === "backward")
-        moved = moveCheck(rover.x + 1, rover.y, rover);
+        moved = checkMovement(rover.x + 1, rover.y, rover);
       break;
+
     case "W":
-      if (movement === "forward")
-        moved = moveCheck(rover.x, rover.y - 1, rover);
-      if (movement === "backward")
-        moved = moveCheck(rover.x, rover.y + 1, rover);
+      if (movement === "forward"){
+        moved = checkMovement(rover.x, rover.y - 1, rover);}
+      if (movement === "backward"){
+        moved = checkMovement(rover.x, rover.y + 1, rover);}
       break;
+      
     case "S":
-      if (movement === "forward")
-        moved = moveCheck(rover.x + 1, rover.y, rover);
-      if (movement === "backward")
-        moved = moveCheck(rover.x - 1, rover.y, rover);
+      if (movement === "forward"){
+        moved = checkMovement(rover.x + 1, rover.y, rover);}
+      if (movement === "backward"){
+        moved = checkMovement(rover.x - 1, rover.y, rover);}
       break;
+
     case "E":
-      if (movement === "forward")
-        moved = moveCheck(rover.x, rover.y + 1, rover);
-      if (movement === "backward")
-        moved = moveCheck(rover.x, rover.y - 1, rover);
+      if (movement === "forward"){
+        moved = checkMovement(rover.x, rover.y + 1, rover);}
+      if (movement === "backward"){
+        moved = checkMovement(rover.x, rover.y - 1, rover);}
       break;
   }
   return moved;
 }
-
-function moveCheck(roverNxtY, roverNxtX, rover) {
+//Comandos
+function checkMovement (roverNextX, roverNextY, rover){
   var moved = true;
-  if(roverNxtX === -1 || roverNextY === -1){
-    console.log(rover.id + " can't go out of boundaries");
+
+  if(roverNextX === -1 || roverNextY === -1){
+    console.log("Sorry, " + rover.id + " can't go out of boundaries");
     moved = false;
   } else {
-    if(grid[roverNxtX][roverNxtY] === null) {
-      grid[rover.x][rover.y] = null;
-      grid[roverNxtX][roverNxtY] = rover;
-      rover.x = roverNxtX;
-      rover.y = roverNxtY;
+    if(mars[roverNextX][roverNextY] === null) {
+      mars[rover.x][rover.y] = null;
+      mars[roverNextX][roverNextY] = rover;
+      rover.x = roverNextX;
+      rover.y = roverNextY;
     }else{
-      if(typeof grid[roverNxtX][roverNxtY] === "string"){
-        console.log("¡Obstacle Found!" + grid[roverNxtX][roverNxtY]);
+      if(typeof mars[roverNextX][roverNextY] === "string"){
+        console.log("¡Obstacle found! => " + mars[roverNextX][roverNextY]);
         moved = false;
       } else {
-        console.log("¡Obstacle Found! " + grid[roverNxtX][roverNxtY].id);
+        console.log("¡Obstacle found! => " + mars[roverNextX][roverNextY].id);
         moved = false;
       }
     }
   }
   return moved;
-  
 }
-function registerMove(rover, moved){
+
+function registMove(rover, moved){
   if (moved) {
     rover.travelLog.push("[" + rover.x + "," + rover.y + "]");
     console.log(rover.id + " is moving to " + rover.direction + ". Next position: [" +
@@ -120,26 +179,6 @@ function registerMove(rover, moved){
   }
 }
 
-function calculatePosition(currentDirect, turnTo){
-  switch (currentDirect){
-    case "N":
-    if (turnTo === "right") rover.direction = "E";
-    else if (turnTo === "left") rover.direction = "W";
-    break;
-    case "W":
-    if (turnTo === "right") rover.direction = "N";
-    else if (turnTo === "left") rover.direction = "S";
-    break;
-    case "S":
-    if (turnTo === "right") rover.direction = "W";
-    else if (turnTo === "left") rover.direction = "E";
-    break;
-    case "E":
-    if (turnTo === "right") rover.direction = "S";
-    else if (turnTo === "left") rover.direction = "N";
-    break;
-  }
-}
 function checkRoverWithTurn(){
   var roverWithTurn;
   for (var rover in rovers){
@@ -156,7 +195,8 @@ function nextTurn(currentRover){
   else
     rovers[indexOfCurrentRover + 1].isMyTurn = true;
 }
-function exeCommandsList (commands) {
+
+function commandsExe (commands) {
   var rover;
   for (var i=0; i<commands.length; i++){
     rover = checkRoverWithTurn();
@@ -167,15 +207,17 @@ function exeCommandsList (commands) {
     else if (commands[i] === "b") moveBackward(rover);
     else if (commands[i] === "l") turnLeft(rover);
     else if (commands[i] === "r") turnRight(rover);
-    else console.log("Command NOT correct, you can only use 'f', 'b', 'r' and 'l'");
+    else console.log("INCORRECT COMMAND, use 'f', 'b', 'r' and 'l'");
   }
+
   for (var roverX in rovers) {
-  printMovements(rovers[roverX]);
- }
+    logTravel (rovers[roverX]);
+  }
 }
-function printMovements(rover){
-  console.log(rover.id)
-  for(var move in rover.travelLog){
+
+function logTravel(rover){
+  console.log(rover.id + "\'s Was here: \n");
+  for(var movement in rover.travelLog){
     console.log(rover.travelLog[movement]);
   }
 }
